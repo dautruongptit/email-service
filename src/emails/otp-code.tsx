@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Text, Section, Code } from '@react-email/components';
+import { Text, Section } from '@react-email/components';
 import { Layout } from './_components/Layout';
 import { Branding } from '../config';
 
@@ -47,7 +47,7 @@ export const OtpCode: React.FC<OtpCodeProps> = ({
       <Text style={text}>{labels.description}</Text>
 
       <Section style={otpContainer}>
-        <Code style={otpCode}>{otp}</Code>
+        <code style={otpCode}>{otp}</code>
       </Section>
 
       <Text style={text}>

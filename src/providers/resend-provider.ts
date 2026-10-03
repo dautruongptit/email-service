@@ -27,7 +27,7 @@ export class ResendProvider implements EmailProvider {
       throw new ProviderError(
         `Resend error: ${error.message}`,
         this.name,
-        'statusCode' in error ? (error.statusCode ?? undefined) : undefined,
+        (error as { statusCode?: number | null }).statusCode ?? undefined,
         error.name,
       );
     }
