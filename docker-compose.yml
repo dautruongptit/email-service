@@ -6,7 +6,7 @@ services:
     container_name: email-service
     restart: unless-stopped
     ports:
-      - '127.0.0.1:8090:3000' # Only localhost for testing
+      - '127.0.0.1:8092:3000' # Only localhost for testing
     env_file:
       - .env
     networks:
