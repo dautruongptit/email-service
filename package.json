@@ -1,0 +1,36 @@
+{
+  "name": "email-service",
+  "version": "1.0.0",
+  "description": "Centralized email service with React Email templates, supporting Resend and Brevo providers",
+  "private": true,
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "email:dev": "email dev -p 3001",
+    "gen:key": "tsx src/scripts/gen-key.ts"
+  },
+  "dependencies": {
+    "react-email": "^4.0.0",
+    "@react-email/components": "^0.0.31",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "resend": "^4.0.0",
+    "@getbrevo/brevo": "^2.0.0",
+    "express": "^4.21.0",
+    "zod": "^3.23.0",
+    "dotenv": "^16.4.0",
+    "helmet": "^8.0.0",
+    "express-rate-limit": "^7.4.0",
+    "pino": "^9.4.0",
+    "pino-pretty": "^11.2.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.0",
+    "tsx": "^4.19.0",
+    "@types/express": "^5.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@types/node": "^22.0.0"
+  }
+}

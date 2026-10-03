@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  email-service:
+    build: .
+    container_name: email-service
+    restart: unless-stopped
+    ports:
+      - '127.0.0.1:8090:3000' # Only localhost for testing
+    env_file:
+      - .env
+    networks:
+      - shared-network
+    mem_limit: 256m
+    cpus: 0.5
+    healthcheck:
+      test: ['CMD', 'wget', '-qO-', 'http://localhost:3000/health']
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+networks:
+  shared-network:
+    external: true
