@@ -50,6 +50,24 @@ export function getAllClients(): ClientConfig[] {
   return clients;
 }
 
+// Link must be https and its host must match allowedLinkDomains
+// ("example.com" exact, "*.example.com" any subdomain). Empty list denies all.
+export function isLinkAllowed(allowedDomains: string[], link: string): boolean {
+  let url: URL;
+  try {
+    url = new URL(link);
+  } catch {
+    return false;
+  }
+  if (url.protocol !== 'https:') return false;
+  const host = url.hostname.toLowerCase();
+  return allowedDomains.some((d) => {
+    const domain = d.toLowerCase();
+    if (domain.startsWith('*.')) return host.endsWith(domain.slice(1));
+    return host === domain;
+  });
+}
+
 // Check if a client is allowed to use a template
 export function isTemplateAllowed(client: ClientConfig, templateId: string): boolean {
   return client.allowedTemplates.some((pattern) => {

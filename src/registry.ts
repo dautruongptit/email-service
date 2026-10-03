@@ -1,7 +1,14 @@
 import { z } from 'zod';
 import React from 'react';
 import { render } from '@react-email/components';
-import { Branding } from './config';
+import { Branding, isLinkAllowed } from './config';
+
+export class LinkNotAllowedError extends Error {
+  constructor(readonly field: string) {
+    super(`Link in "${field}" must be https and on an allowed domain`);
+    this.name = 'LinkNotAllowedError';
+  }
+}
 
 // Template definition
 interface TemplateDefinition<T extends z.ZodType> {
@@ -32,6 +39,7 @@ export async function renderTemplate(
   templateId: string,
   data: Record<string, unknown>,
   branding: Branding,
+  allowedLinkDomains: string[] = [],
 ): Promise<{ subject: string; html: string }> {
   const template = templates.get(templateId);
   if (!template) {
@@ -40,6 +48,13 @@ export async function renderTemplate(
 
   // Validate data
   const validated = template.schema.parse(data);
+
+  // Every *Url field must be https and on the client's allowed domains
+  for (const [key, value] of Object.entries(validated as Record<string, unknown>)) {
+    if (/url$/i.test(key) && typeof value === 'string' && !isLinkAllowed(allowedLinkDomains, value)) {
+      throw new LinkNotAllowedError(key);
+    }
+  }
 
   // Generate subject
   const subject = template.subject(validated, branding);
@@ -79,7 +94,8 @@ registerTemplate('otp-code', {
       RESET_PASSWORD: 'Mã đặt lại mật khẩu',
       RESET_PIN: 'Mã đặt lại PIN',
     };
-    return `[${branding.appName}] ${labels[data.purpose] ?? 'Mã OTP'}: ${data.otp}`;
+    // Never put the OTP in the subject: it leaks via lock-screen previews and provider logs
+    return `[${branding.appName}] ${labels[data.purpose] ?? 'Mã OTP'}`;
   },
   component: OtpCode as any,
   category: 'authentication',

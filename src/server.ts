@@ -6,7 +6,7 @@ import { loadClients, isTemplateAllowed } from './config';
 import { initProviders, sendWithFallback } from './providers';
 import { authMiddleware } from './middleware/auth';
 import { clientRateLimit } from './middleware/rate-limit';
-import { renderTemplate, listTemplates } from './registry';
+import { renderTemplate, listTemplates, LinkNotAllowedError } from './registry';
 import { z } from 'zod';
 
 const logger = pino({
@@ -56,6 +56,7 @@ app.post(
         body.template,
         body.data,
         client.branding,
+        client.allowedLinkDomains,
       );
 
       // Namespace idempotency key per client
@@ -109,6 +110,11 @@ app.post(
           error: 'Validation error',
           details: err.errors,
         });
+        return;
+      }
+
+      if (err instanceof LinkNotAllowedError) {
+        res.status(400).json({ error: err.message });
         return;
       }
 
